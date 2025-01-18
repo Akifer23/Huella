@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Autenticación con Huella</title>
+</head>
+<body>
+  <h1>Autenticación con Huella Digital</h1>
+  <button id="unlockButton">Desbloquear</button>
+
+  <script>
+    document.getElementById('unlockButton').addEventListener('click', async () => {
+      if (!window.PublicKeyCredential) {
+        alert("Tu navegador no soporta autenticación con huella digital.");
+        return;
+      }
+
+      try {
+        // Opciones para el desafío de autenticación
+        const options = {
+          publicKey: {
+            challenge: Uint8Array.from('challengeString', c => c.charCodeAt(0)),
+            allowCredentials: [
+              {
+                id: new Uint8Array([1, 2, 3, 4]), // Simulación de credenciales (debería venir de tu backend)
+                type: 'public-key',
+              }
+            ],
+            timeout: 60000,
+            userVerification: 'preferred'
+          }
+        };
+
+        // Solicitar autenticación con huella digital
+        const credential = await navigator.credentials.get(options);
+
+        // Si la autenticación fue exitosa
+        if (credential) {
+          alert("Autenticación exitosa");
+          window.location.href = "redireccion.html"; // Redirigir a otra página
+        }
+      } catch (error) {
+        console.error("Error en la autenticación:", error);
+        alert("No se pudo completar la autenticación.");
+      }
+    });
+  </script>
+</body>
+</html>
